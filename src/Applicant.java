@@ -112,11 +112,13 @@ public class Applicant {
 
                 nextLine = transcriptStream.readLine();
             }
+            // TODO: Check if Student Grade matches the gradescale that was given.
+            // TODO: Check for all the corner cases.
 
         } catch (IOException e) {
             return false;
         }
-        return false;
+        return true;
     }
 
 }
