@@ -1,5 +1,5 @@
 alphabetic
-AA  A+
-AB  A
-BB  A-
-BC  B+
+AA	A+
+AB	A
+BB	A-
+BC	B+
