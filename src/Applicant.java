@@ -1,10 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Applicant {
 
@@ -14,8 +11,22 @@ public class Applicant {
     private String studentIdentifier = null;
     private String program = null;
     private String major = null;
+    private TreeMap<String, CourseGradeDetails> courses= null;
 
-    private HashMap<String, CourseGradeDetails> courses= null;
+    private final Map<String, Double> dalhousieStandardGradeScale = Map.ofEntries(
+            Map.entry("A+", 4.5),
+            Map.entry("A", 4.0),
+            Map.entry("A-", 3.7),
+            Map.entry("B+", 3.3),
+            Map.entry("B", 3.0),
+            Map.entry("B-", 2.7),
+            Map.entry("C+", 2.3),
+            Map.entry("C", 2.0),
+            Map.entry("C-", 1.7),
+            Map.entry("D", 1.0),
+            Map.entry("F", 0.0)
+    );
+
     public Applicant(){
         institute= "";
         gradeScale= "";
@@ -23,7 +34,7 @@ public class Applicant {
         studentIdentifier= "";
         program= "";
         major= "";
-        courses = new HashMap<>();
+        courses = new TreeMap<>(Collections.reverseOrder());
     }
 
     public static class CourseGradeDetails{
@@ -63,9 +74,8 @@ public class Applicant {
                 convertedTranscript.print(course.getValue().courseNumber + "\t");
                 convertedTranscript.print(course.getValue().courseTitle + "\t");
                 convertedTranscript.print(scaleInfo.get(course.getValue().studentGrade));
-                convertedTranscript.print("\n");
+                convertedTranscript.println();
             }
-
         }
 
         return false;
@@ -135,17 +145,60 @@ public class Applicant {
                 course.creditHours = Integer.parseInt(courseDetailsArray[4]);
                 course.studentGrade = courseDetailsArray[5];
 
-                courses.put(course.courseNumber, course);
+                courses.put(course.term+course.courseNumber+course.subjectCode, course);
 
                 nextLine = transcriptStream.readLine();
             }
             // TODO: Check if Student Grade matches the grade scale that was given.
+
             // TODO: Check for all the corner cases.
 
         } catch (IOException e) {
             return false;
         }
         return true;
+    }
+
+    Double calculateGPA(Double maxHours, Set<String> coursesToExclude){
+        TreeMap<String, CourseGradeDetails> temporaryCourses = new TreeMap<>(Collections.reverseOrder());
+        for(Map.Entry<String, CourseGradeDetails> course : courses.entrySet()){
+            String courseTitle = course.getValue().courseTitle;
+            for (String courseToExclude : coursesToExclude) {
+                if (courseTitle.contains(courseToExclude)) {
+                    System.out.println(courseTitle);
+                    temporaryCourses.put(course.getKey(), course.getValue());
+                    break;
+                }
+            }
+        }
+
+        for(Map.Entry<String, CourseGradeDetails> temporaryCourse : temporaryCourses.entrySet()){
+            courses.remove(temporaryCourse.getKey());
+        }
+
+        int totalCreditHours = 0;
+
+        TreeMap<String, CourseGradeDetails> coursesConsidered = new TreeMap<>(Collections.reverseOrder());
+
+        for(Map.Entry<String, CourseGradeDetails> course : courses.entrySet()){
+            if(dalhousieStandardGradeScale.get(course.getValue().studentGrade)!=null){
+                totalCreditHours += course.getValue().creditHours;
+            }
+            if(totalCreditHours>=maxHours){
+                coursesConsidered.put(course.getKey(), course.getValue());
+                break;
+            }
+        }
+
+        double totalWeightedGPA = 0;
+        for(Map.Entry<String, CourseGradeDetails> courseConsidered : coursesConsidered.entrySet()){
+            totalWeightedGPA += dalhousieStandardGradeScale.get(courseConsidered.getValue().studentGrade);
+        }
+
+        double weightedAverageGPA = totalWeightedGPA/totalCreditHours;
+
+        courses.putAll(temporaryCourses);
+        return weightedAverageGPA;
     }
 
 }

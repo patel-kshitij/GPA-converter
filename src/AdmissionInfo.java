@@ -8,7 +8,9 @@ public class AdmissionInfo {
     private HashMap<String, Applicant> applicants = null;
     private HashMap<String, Scale> scales = null;
 
-    private Map<String, Double> dalhousieStandardGradeScale = Map.ofEntries(
+    private Set<String> coursesOfInterest = null;
+
+    private final Map<String, Double> dalhousieStandardGradeScale = Map.ofEntries(
             Map.entry("A+", 4.5),
             Map.entry("A", 4.0),
             Map.entry("A-", 3.7),
@@ -24,15 +26,16 @@ public class AdmissionInfo {
 
     //This is a test case for courseStem. I don;t know the use of it.
     // TODO: Remove this variable.
-    private String[] courses = new String[]{"advanced algorithm analysis", "topics in algorithm analysis",
+    private final String[] courses = new String[]{"advanced algorithm analysis", "topics in algorithm analysis",
             "algorithm analysis and design", "algorithm design and analysis"};
     public AdmissionInfo() {
         applicants = new HashMap<>();
         scales = new HashMap<>();
         courseStems = new HashMap<>();
+        coursesOfInterest = new HashSet<>();
     }
 
-    Boolean gradeScale(String scaleName, BufferedReader scaleInfo){
+    public Boolean gradeScale(String scaleName, BufferedReader scaleInfo){
 
         if(scaleName == null || scaleInfo == null){
             return false;
@@ -48,7 +51,7 @@ public class AdmissionInfo {
     }
 
 
-    Boolean coreAdmissionCourse(String courseStem){
+    public Boolean coreAdmissionCourse(String courseStem){
         //TODO: Fix this as soon as possible.
         if(courseStem == null){
             return false;
@@ -67,7 +70,7 @@ public class AdmissionInfo {
     }
 
 
-    Boolean applicantTranscript(String applicantId , BufferedReader transcriptStream){
+    public Boolean applicantTranscript(String applicantId , BufferedReader transcriptStream){
 
         if(applicantId == null || transcriptStream == null){
             return false;
@@ -82,7 +85,7 @@ public class AdmissionInfo {
         return false;
     }
 
-    Boolean translateTranscript(String applicantId, PrintWriter convertedTranscript){
+    public Boolean translateTranscript(String applicantId, PrintWriter convertedTranscript){
         if(applicantId == null || convertedTranscript == null){
             return false;
         }
@@ -99,5 +102,25 @@ public class AdmissionInfo {
         }
 
         return true;
+    }
+
+
+    Double applicantGPA( String applicantId, Double maxHours, Set<String> coursesToExclude){
+
+        if(applicantId == null || maxHours == null || coursesToExclude == null){
+            return (double) -1;
+        }
+
+        Applicant applicant = applicants.get(applicantId);
+        if (applicant == null){
+            return (double) -1;
+        }
+
+        return applicant.calculateGPA(maxHours, coursesToExclude);
+    }
+
+
+    public Map<String, Integer> coursesTaken(String applicationId){
+        return null;
     }
 }
