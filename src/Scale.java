@@ -7,13 +7,13 @@ import java.util.TreeMap;
 
 public class Scale {
 
-    private final String ALPHABETIC = "alphabetic";
-    private final String NUMERIC = "numeric";
+    public final String ALPHABETIC = "alphabetic";
+    public final String NUMERIC = "numeric";
 
-    private HashMap<String, String> info = null;
-    private String type = null;
+    public TreeMap<String, String> info = null;
+    public String type = null;
     public Scale(){
-        info = new HashMap<>();
+        info = new TreeMap<>();
         type = "";
     }
 

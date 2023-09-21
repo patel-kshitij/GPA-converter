@@ -1,13 +1,15 @@
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.Arrays;
+import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
 public class Applicant {
 
     private String institute = null;
-    private String gradeScale = null;
+    protected String gradeScale = null;
     private String studentName = null;
     private String studentIdentifier = null;
     private String program = null;
@@ -42,6 +44,33 @@ public class Applicant {
             studentGrade = "";
         }
     }
+
+    public boolean convertTranscript(PrintWriter convertedTranscript, Scale scale) {
+
+        convertedTranscript.println("Institute\t" + institute);
+        convertedTranscript.println("Grade scale\tDalhousie standard");
+        convertedTranscript.println("Student name\t" + studentName);
+        convertedTranscript.println("Student identifier\t" + studentIdentifier);
+        convertedTranscript.println("Program\t" + program);
+        convertedTranscript.println("Major\t" + major);
+
+        if(Objects.equals(scale.type, scale.ALPHABETIC)){
+            TreeMap<String, String> scaleInfo = scale.info;
+            for (Map.Entry<String, CourseGradeDetails> course : courses.entrySet()){
+                convertedTranscript.print(course.getValue().term + "\t");
+                convertedTranscript.print(course.getValue().subjectCode + "\t");
+                convertedTranscript.print(course.getValue().courseNumber + "\t");
+                convertedTranscript.print(course.getValue().courseNumber + "\t");
+                convertedTranscript.print(course.getValue().courseTitle + "\t");
+                convertedTranscript.print(scaleInfo.get(course.getValue().studentGrade));
+                convertedTranscript.print("\n");
+            }
+
+        }
+
+        return false;
+    }
+
     public boolean addApplicantDetails(BufferedReader transcriptStream){
 
         try {
@@ -84,12 +113,10 @@ public class Applicant {
             major = majorDetailsArr[detailsPositionInArray];
 
             String nextLine = transcriptStream.readLine();
-
             if(nextLine == null){
                 return false;
             }
-            while(nextLine != null){
-
+            while(!(nextLine == null || nextLine.trim().isEmpty())){
 
                 String[] courseDetailsArray = nextLine.split("\\t+");
 
@@ -112,7 +139,7 @@ public class Applicant {
 
                 nextLine = transcriptStream.readLine();
             }
-            // TODO: Check if Student Grade matches the gradescale that was given.
+            // TODO: Check if Student Grade matches the grade scale that was given.
             // TODO: Check for all the corner cases.
 
         } catch (IOException e) {

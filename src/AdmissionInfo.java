@@ -1,7 +1,5 @@
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.Map;
+import java.util.*;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 public class AdmissionInfo {
@@ -9,6 +7,20 @@ public class AdmissionInfo {
     private HashMap<String, Set<String>> courseStems = null;
     private HashMap<String, Applicant> applicants = null;
     private HashMap<String, Scale> scales = null;
+
+    private Map<String, Double> dalhousieStandardGradeScale = Map.ofEntries(
+            Map.entry("A+", 4.5),
+            Map.entry("A", 4.0),
+            Map.entry("A-", 3.7),
+            Map.entry("B+", 3.3),
+            Map.entry("B", 3.0),
+            Map.entry("B-", 2.7),
+            Map.entry("C+", 2.3),
+            Map.entry("C", 2.0),
+            Map.entry("C-", 1.7),
+            Map.entry("D", 1.0),
+            Map.entry("F", 0.0)
+    );
 
     //This is a test case for courseStem. I don;t know the use of it.
     // TODO: Remove this variable.
@@ -37,7 +49,21 @@ public class AdmissionInfo {
 
 
     Boolean coreAdmissionCourse(String courseStem){
-
+        //TODO: Fix this as soon as possible.
+        if(courseStem == null){
+            return false;
+        }
+        Set<String> courseOfInterest = new HashSet<String>();
+        for(String course: courses){
+            if(course.toLowerCase(Locale.ROOT).contains(courseStem.toLowerCase())){
+                courseOfInterest.add(course);
+            }
+        }
+        if(courseOfInterest.isEmpty()){
+            return false;
+        }
+        courseStems.put(courseStem, courseOfInterest);
+        return true;
     }
 
 
@@ -54,5 +80,24 @@ public class AdmissionInfo {
         }
 
         return false;
+    }
+
+    Boolean translateTranscript(String applicantId, PrintWriter convertedTranscript){
+        if(applicantId == null || convertedTranscript == null){
+            return false;
+        }
+        Applicant applicant = applicants.get(applicantId);
+        Scale scale = new Scale();
+        scale = scales.get(applicant.gradeScale);
+        if(applicant == null) {
+            return false;
+        }
+
+        boolean convertTranscriptResponse = applicant.convertTranscript(convertedTranscript, scale);
+        if(!convertTranscriptResponse){
+            return false;
+        }
+
+        return true;
     }
 }
