@@ -24,6 +24,7 @@ public class A1 {
         } catch (FileNotFoundException e) {
             System.out.println("This is not the path");
         }
+
         //To try translateTranscript()
         try {
             FileWriter fw = new FileWriter("Tests/TranslatedTranscript");
@@ -36,11 +37,14 @@ public class A1 {
             throw new RuntimeException(e);
         }
 
+        // To try applicant GPA function
         try {
             double gpa = gradeScaleTest.applicantGPA(applicantId, (double) 3, Collections.singleton("test"));
             System.out.println(gpa);
         } catch (Exception e){
-            return;
+            throw new RuntimeException(e);
         }
+
+        // To try core
     }
 }

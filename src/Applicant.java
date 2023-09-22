@@ -25,7 +25,7 @@ public class Applicant {
     private String studentIdentifier = null;
     private String program = null;
     private String major = null;
-    private TreeMap<String, CourseGradeDetails> courses = null;
+    protected TreeMap<String, CourseGradeDetails> courses = null;
 
     public Applicant() {
         institute = "";
